@@ -42,44 +42,41 @@ export const BackgroundGradientAnimation = ({
   const [isSafari, setIsSafari] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Initialize component after mount
+  // Initialize component after mount - SAFE version
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Set CSS variables only on client side
+  // Set CSS variables only on client side - COMPLETELY SAFE version
   useEffect(() => {
+    if (typeof document === 'undefined') return;
     if (!isMounted) return;
 
-    document.body.style.setProperty(
-      "--gradient-background-start",
-      gradientBackgroundStart
-    );
-    document.body.style.setProperty(
-      "--gradient-background-end",
-      gradientBackgroundEnd
-    );
-    document.body.style.setProperty("--first-color", firstColor);
-    document.body.style.setProperty("--second-color", secondColor);
-    document.body.style.setProperty("--third-color", thirdColor);
-    document.body.style.setProperty("--fourth-color", fourthColor);
-    document.body.style.setProperty("--fifth-color", fifthColor);
-    document.body.style.setProperty("--pointer-color", pointerColor);
-    document.body.style.setProperty("--size", size);
-    document.body.style.setProperty("--blending-value", blendingValue);
+    const style = document.documentElement.style;
+    
+    style.setProperty("--gradient-background-start", gradientBackgroundStart);
+    style.setProperty("--gradient-background-end", gradientBackgroundEnd);
+    style.setProperty("--first-color", firstColor);
+    style.setProperty("--second-color", secondColor);
+    style.setProperty("--third-color", thirdColor);
+    style.setProperty("--fourth-color", fourthColor);
+    style.setProperty("--fifth-color", fifthColor);
+    style.setProperty("--pointer-color", pointerColor);
+    style.setProperty("--size", size);
+    style.setProperty("--blending-value", blendingValue);
 
     // Cleanup function to remove styles
     return () => {
-      document.body.style.removeProperty("--gradient-background-start");
-      document.body.style.removeProperty("--gradient-background-end");
-      document.body.style.removeProperty("--first-color");
-      document.body.style.removeProperty("--second-color");
-      document.body.style.removeProperty("--third-color");
-      document.body.style.removeProperty("--fourth-color");
-      document.body.style.removeProperty("--fifth-color");
-      document.body.style.removeProperty("--pointer-color");
-      document.body.style.removeProperty("--size");
-      document.body.style.removeProperty("--blending-value");
+      style.removeProperty("--gradient-background-start");
+      style.removeProperty("--gradient-background-end");
+      style.removeProperty("--first-color");
+      style.removeProperty("--second-color");
+      style.removeProperty("--third-color");
+      style.removeProperty("--fourth-color");
+      style.removeProperty("--fifth-color");
+      style.removeProperty("--pointer-color");
+      style.removeProperty("--size");
+      style.removeProperty("--blending-value");
     };
   }, [
     isMounted,
@@ -95,14 +92,15 @@ export const BackgroundGradientAnimation = ({
     blendingValue,
   ]);
 
-  // Detect Safari only on client side
+  // Detect Safari only on client side - SAFE version
   useEffect(() => {
+    if (typeof navigator === 'undefined') return;
     if (!isMounted) return;
     
     setIsSafari(/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
   }, [isMounted]);
 
-  // Animation frame
+  // Animation frame - SAFE version
   useEffect(() => {
     if (!isMounted) return;
 
@@ -118,7 +116,7 @@ export const BackgroundGradientAnimation = ({
     }
 
     move();
-  }, [tgX, tgY, isMounted]);
+  }, [tgX, tgY, isMounted, curX, curY]);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     if (interactiveRef.current) {
@@ -128,19 +126,19 @@ export const BackgroundGradientAnimation = ({
     }
   };
 
-  // Don't render the interactive parts until mounted
+  // SIMPLIFIED fallback - Only render basic structure during SSR
   if (!isMounted) {
     return (
       <div
         className={cn(
-          "w-full h-full absolute overflow-hidden top-0 left-0 bg-[linear-gradient(40deg,var(--gradient-background-start, rgb(108, 0, 162)),var(--gradient-background-end, rgb(0, 17, 82)))]",
+          "w-full h-full absolute overflow-hidden top-0 left-0 bg-gradient-to-br from-purple-900 to-blue-900",
           containerClassName
         )}
       >
         <div className={cn("", className)}>{children}</div>
-        {/* Simple fallback without animations */}
-        <div className="gradients-container h-full w-full blur-lg opacity-50">
-          <div className="absolute w-1/2 h-1/2 top-1/4 left-1/4 bg-blue-500/20 rounded-full mix-blend-hard-light animate-pulse"></div>
+        {/* Minimal fallback - no dynamic CSS variables */}
+        <div className="gradients-container h-full w-full blur-lg">
+          <div className="absolute w-1/2 h-1/2 top-1/4 left-1/4 bg-blue-500/20 rounded-full"></div>
         </div>
       </div>
     );
