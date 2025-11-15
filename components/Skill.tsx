@@ -2,7 +2,7 @@ import React, {useContext} from "react";
 import "./skill.css";
 import SoftwareSkill from "./SoftwareSkill";
 import {skillsSection,illustration} from "./ui/portfolio";
-import {Fade} from "react-reveal";
+import {Fade} from "react-awesome-reveal";
 import codingPerson from "./codingPerson.json";
 import DisplayLottie from "./DisplayLottie.js";
 import { BackgroundGradientAnimation } from "./ui/GradientBg";
