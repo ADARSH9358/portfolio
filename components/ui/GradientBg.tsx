@@ -39,7 +39,18 @@ export const BackgroundGradientAnimation = ({
   const [curY, setCurY] = useState(0);
   const [tgX, setTgX] = useState(0);
   const [tgY, setTgY] = useState(0);
+  const [isSafari, setIsSafari] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Initialize component after mount
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Set CSS variables only on client side
+  useEffect(() => {
+    if (!isMounted) return;
+
     document.body.style.setProperty(
       "--gradient-background-start",
       gradientBackgroundStart
@@ -56,9 +67,45 @@ export const BackgroundGradientAnimation = ({
     document.body.style.setProperty("--pointer-color", pointerColor);
     document.body.style.setProperty("--size", size);
     document.body.style.setProperty("--blending-value", blendingValue);
-  }, []);
 
+    // Cleanup function to remove styles
+    return () => {
+      document.body.style.removeProperty("--gradient-background-start");
+      document.body.style.removeProperty("--gradient-background-end");
+      document.body.style.removeProperty("--first-color");
+      document.body.style.removeProperty("--second-color");
+      document.body.style.removeProperty("--third-color");
+      document.body.style.removeProperty("--fourth-color");
+      document.body.style.removeProperty("--fifth-color");
+      document.body.style.removeProperty("--pointer-color");
+      document.body.style.removeProperty("--size");
+      document.body.style.removeProperty("--blending-value");
+    };
+  }, [
+    isMounted,
+    gradientBackgroundStart,
+    gradientBackgroundEnd,
+    firstColor,
+    secondColor,
+    thirdColor,
+    fourthColor,
+    fifthColor,
+    pointerColor,
+    size,
+    blendingValue,
+  ]);
+
+  // Detect Safari only on client side
   useEffect(() => {
+    if (!isMounted) return;
+    
+    setIsSafari(/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
+  }, [isMounted]);
+
+  // Animation frame
+  useEffect(() => {
+    if (!isMounted) return;
+
     function move() {
       if (!interactiveRef.current) {
         return;
@@ -71,7 +118,7 @@ export const BackgroundGradientAnimation = ({
     }
 
     move();
-  }, [tgX, tgY]);
+  }, [tgX, tgY, isMounted]);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     if (interactiveRef.current) {
@@ -81,10 +128,23 @@ export const BackgroundGradientAnimation = ({
     }
   };
 
-  const [isSafari, setIsSafari] = useState(false);
-  useEffect(() => {
-    setIsSafari(/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
-  }, []);
+  // Don't render the interactive parts until mounted
+  if (!isMounted) {
+    return (
+      <div
+        className={cn(
+          "w-full h-full absolute overflow-hidden top-0 left-0 bg-[linear-gradient(40deg,var(--gradient-background-start, rgb(108, 0, 162)),var(--gradient-background-end, rgb(0, 17, 82)))]",
+          containerClassName
+        )}
+      >
+        <div className={cn("", className)}>{children}</div>
+        {/* Simple fallback without animations */}
+        <div className="gradients-container h-full w-full blur-lg opacity-50">
+          <div className="absolute w-1/2 h-1/2 top-1/4 left-1/4 bg-blue-500/20 rounded-full mix-blend-hard-light animate-pulse"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
