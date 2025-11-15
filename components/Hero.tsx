@@ -43,7 +43,7 @@ const Hero = () => {
       <div className="flex justify-center relative my-20 z-10">
         <div className="max-w-[89vw] md:max-w-2xl lg:max-w-[60vw] flex flex-col items-center justify-center">
           <p className="tracking-widest text-xs text-center text-blue-100 max-w-90 text-[30px]">
-            Hi! I'm Adarsh Kumar
+            Hi! I&apos;m Adarsh Kumar
             <span className="wave-emoji" style={{marginLeft:'15px'}}><img alt="👋" draggable="false" className="hi" src="http://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44b.png" style={{}}/></span>
           </p>
 
