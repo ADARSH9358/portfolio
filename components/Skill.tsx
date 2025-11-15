@@ -38,7 +38,7 @@ export default function Skills() {
         {/* <BackgroundGradientAnimation>
             <div className="absolute z-50 inset-0 flex items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl"></div>
           </BackgroundGradientAnimation> */}
-        <Fade right duration={1000}>
+        <Fade direction="right" duration={1000} triggerOnce>
           <div className="skills-text-div">
             <h1
               className={isDark ? "dark-mode skills-heading" : "skills-heading"}
