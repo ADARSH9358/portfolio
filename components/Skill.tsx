@@ -21,7 +21,7 @@ export default function Skills() {
          {/* <ReactSVG /> */}
          
       <div className="skills-main-div">
-        <Fade left duration={1000}>
+        <Fade direction="left" duration={1000} triggerOnce>
           <div className="skills-image-div">
             {illustration.animated ? (
               <DisplayLottie animationData={codingPerson} />
