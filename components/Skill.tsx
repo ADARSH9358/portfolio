@@ -3,7 +3,12 @@ import React, {useContext} from "react";
 import "./skill.css";
 import SoftwareSkill from "./SoftwareSkill";
 import {skillsSection,illustration} from "./ui/portfolio";
-import {Fade} from "react-awesome-reveal";
+import dynamic from "next/dynamic";
+
+const Fade = dynamic(
+  () => import("react-awesome-reveal").then((mod) => mod.Fade),
+  { ssr: false }
+);
 import codingPerson from "./codingPerson.json";
 import DisplayLottie from "./DisplayLottie.js";
 import { BackgroundGradientAnimation } from "./ui/GradientBg";
